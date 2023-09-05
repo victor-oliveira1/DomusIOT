@@ -1,0 +1,91 @@
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  </head>
+<body>
+    <button class="btn btn-primary" onclick="document.documentElement.requestFullscreen();">
+        Tela Cheia
+    </button>
+
+    <div class="container-fluid text-center">
+        <h2>Dispositivos</h2>
+
+        <!-- -->
+        <div class="accordion" id="accordionExample">
+            {% for group in groups %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                    <button class="accordion-button {% if loop.index != 1 %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                        {{ group }}
+                    </button>
+                    </h2>
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse{% if loop.index == 1 %} show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="row">
+                            {% for device in groups[group] %}
+                                <div class="col col-sm-1 col-md-3 col-lg-2">
+                                    <div class="card mx-auto mb-4" style="width: 13rem;">
+                                        <img data-bs-toggle="modal" data-bs-target="#exampleModal" class="card-img-top img-fluid w-50 h-50 mx-auto" src="{{ device.icon }}" onclick='showStatusModal(this)'>
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title" dev_id="{{ device.id }}">{{ device.name }}</h5>
+                                            {% for mapping in device.mapping %}
+                                                {% if device.mapping[mapping].code.startswith('switch_') %}
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-primary" value="1" dps="{{ mapping }}" onclick="doCommand(this)">ON</button>
+                                                        <button class="btn btn-secondary" value="0" dps="{{ mapping }}" onclick="doCommand(this)">OFF</button>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- -->
+    </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" data-bs-animation="2">
+        <div id="alertToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+<!--             <img src="..." class="rounded me-2" alt="..."> -->
+            <strong class="me-auto">Home Control</strong>
+            <small>Agora</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ...
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom.js') }}">
+    </script>
+</body>
+</html>
