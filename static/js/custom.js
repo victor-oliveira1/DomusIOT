@@ -104,3 +104,12 @@ function showStatusModal(element) {
         }
     )
 }
+
+function telaCheia() {
+    elem = document.documentElement
+    if (window.innerHeight === screen.height) {
+        document.exitFullscreen()
+    } else {
+        elem.requestFullscreen()
+    }
+}
