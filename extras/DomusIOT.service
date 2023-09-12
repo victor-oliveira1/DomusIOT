@@ -1,0 +1,16 @@
+[Unit]
+Description=DomusIOT Service
+After=network.target
+After=nginx.service
+
+[Service]
+User=<user>
+Group=<group>
+Environment=PATH=<dir>/DomusIOT/runtime/bin/
+Environment=HOME=<dir>/DomusIOT/
+WorkingDirectory=<dir>/DomusIOT/
+ExecStart=<dir>/DomusIOT/runtime/bin/gunicorn app:app -c gunicorn.conf.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

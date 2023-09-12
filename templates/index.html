@@ -14,10 +14,10 @@
             </a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Configurações</a>
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
                 </li>
             </ul>
-            <button class="btn" onclick="telaCheia()">
+            <button type="button" class="btn btn-sm btn-primary" onclick="fullScreenTrigger()" style="--bs-btn-padding-y: 0.5rem;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fullscreen" viewBox="0 0 16 16">
                     <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/>
                 </svg>
@@ -25,73 +25,62 @@
         </div>
     </nav>
 
-    <div class="container-fluid text-center" style="padding-top: 70px;">
-        <h2>Dispositivos</h2>
+    <div class="container text-center" style="padding-top: 70px;">
+        <h2 class="mb-3">Dispositivos</h2>
 
-        <!-- -->
-        <div class="accordion" id="accordionExample">
-            {% for group in groups %}
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading{{ loop.index }}">
-                    <button class="accordion-button {% if loop.index != 1 %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
-                        {{ group }}
-                    </button>
-                    </h2>
-                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse{% if loop.index == 1 %} show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#accordionExample">
+        <div class="accordion mb-3" id="accordionDevices">
+            {% for group in devices %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ loop.index }}">
+                <button class="accordion-button {% if loop.index != 1 %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                    {{ group }}
+                </button>
+                </h2>
+                <div id="collapse{{ loop.index }}" class="accordion-collapse collapse{% if loop.index == 1 %} show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#accordionDevices">
                     <div class="accordion-body">
                         <div class="row">
-                            {% for device in groups[group] %}
-                                <div class="col col-sm-1 col-md-3 col-lg-2">
-                                    <div class="card mx-auto mb-4" style="width: 13rem;">
-                                        <img data-bs-toggle="modal" data-bs-target="#exampleModal" class="card-img-top img-fluid w-50 h-50 mx-auto" src="{{ device.icon }}" onclick='showStatusModal(this)'>
-                                        <div class="card-body text-center">
-                                            <h5 class="card-title" dev_id="{{ device.id }}">{{ device.name }}</h5>
-                                            {% for mapping in device.mapping %}
-                                                {% if device.mapping[mapping].code.startswith('switch_') %}
-                                                    <div class="btn-group" role="group">
-                                                        <button class="btn btn-primary" value="1" dps="{{ mapping }}" onclick="doCommand(this)">ON</button>
-                                                        <button class="btn btn-secondary" value="0" dps="{{ mapping }}" onclick="doCommand(this)">OFF</button>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
+                            {% for device in devices[group] %}
+                            <div class="col">
+                                <div class="card mx-auto mb-2 mt-2" style="width: 13rem;">
+                                    <img data-bs-toggle="modal" data-bs-target="#modalDeviceStatus" class="card-img-top img-fluid w-50 h-50 mx-auto" src="{{ url_for('static', filename='img/' + device.icon) }}" onclick="deviceStatus('{{ device.name }}', '{{ device.id }}')">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title" deviceId="{{ device.id }}">{{ device.name }}</h5>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-primary" onclick="deviceSet(this, '{{ device.name }}', '{{ device.id }}', {{ device.dps }}, true)">ON</button>
+                                            <button class="btn btn-secondary" onclick="deviceSet(this, '{{ device.name }}', '{{ device.id }}', {{ device.dps }}, false)">OFF</button>
                                         </div>
                                     </div>
                                 </div>
-
+                            </div>
                             {% endfor %}
                         </div>
                     </div>
-                    </div>
                 </div>
+            </div>
             {% endfor %}
         </div>
-
-        <!-- -->
-    </div>
     </div>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3" data-bs-animation="2">
-        <div id="alertToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="toastAlert" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
-<!--             <img src="..." class="rounded me-2" alt="..."> -->
-            <strong class="me-auto">DomusIOT</strong>
-            <small>Agora</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                <strong class="me-auto">DomusIOT</strong>
+                <small>Agora</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="toast-body">
+            <div class="toast-body" id="toastAlertBody">
                 ...
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDeviceStatus" tabindex="-1" aria-labelledby="modalDeviceStatusLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="modalDeviceStatusLabel">...</h5>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" id="modalDeviceStatusBody">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -99,6 +88,7 @@
             </div>
         </div>
     </div>
+
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/custom.js') }}">
     </script>

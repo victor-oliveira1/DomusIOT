@@ -1,2 +1,6 @@
-source runtime/bin/activate
-flask run -h 0.0.0.0 --debug
+#!/usr/bin/env bash
+which gunicorn &> /dev/null || {
+    source runtime/bin/activate
+}
+
+gunicorn app:app

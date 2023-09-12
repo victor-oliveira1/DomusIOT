@@ -1,25 +1,16 @@
-function doCommand(elem) {
+function deviceSet(elem, name, id, dps, value) {
     elem.disabled = true
 
-    var cardBodyElement = elem.parentNode.parentNode
-    var cardTitleElement = cardBodyElement.children[0]
-
-    var cardTitle = cardTitleElement.textContent
-    var cmd = elem.value
-    var dps = elem.getAttribute('dps')
-    var devId = cardTitleElement.getAttribute('dev_id')
-
-    if (cmd == 0) {
-        cmdText = 'Desligado'
-    }
-    else if (cmd == 1) {
-        cmdText = 'Ligado'
+    if (value == true) {
+        valueText = 'Ligado'
+    } else if (value == false) {
+        valueText = 'Desligado'
     }
 
     const postdata = {
-        cmd: cmd,
+        id: id,
         dps: dps,
-        dev_id: devId
+        value: value
     }
 
     const config = {
@@ -29,38 +20,31 @@ function doCommand(elem) {
     }
 
     fetch(
-        window.location.href, config
+        window.location.href + "/device/set", config
     )
     .then(
-        response => {showToast(`${cardTitle}: ${cmdText}`)}
+        response => {toastShow(`${name}: ${valueText}`)}
     )
     .catch(
-        error => {showToast(`${cardTitle}: ${error}`)}
+        error => {toastShow(`${name}: ${error}`)}
     )
     .finally(
         () => {elem.disabled = false}
     )
 }
 
-function showToast(text) {
-    const toastElement = document.getElementById('alertToast')
-    toastElement.getElementsByClassName('toast-body')[0].innerHTML = text
-    const toast = new bootstrap.Toast(toastElement)
-    // toast._config.delay = 5000
-    toast.show()
+function toastShow(text) {
+    toastElement = document.querySelector('#toastAlert')
+    document.querySelector('#toastAlertBody').innerHTML = text
+    new bootstrap.Toast(toastElement).show()
 }
 
-function showStatusModal(element) {
-    deviceElement = element.parentElement.getElementsByClassName('card-title')[0]
-
-    deviceName = deviceElement.textContent
-    deviceId = deviceElement.getAttribute('dev_id')
-
-    document.getElementsByClassName("modal-title")[0].textContent = deviceName
-    document.getElementsByClassName("modal-body")[0].innerHTML = "Carregando..."
+function deviceStatus(name, id) {
+    document.querySelector('#modalDeviceStatusLabel').textContent = name
+    document.querySelector("#modalDeviceStatusBody").textContent = 'Carregando...'
 
     const postdata = {
-        dev_id: deviceId
+        id: id,
     }
 
     const config = {
@@ -70,7 +54,7 @@ function showStatusModal(element) {
     }
 
     fetch(
-        window.location.href + "/status", config
+        window.location.href + "/device/status", config
     )
     .then(
         response => {return response.json()}
@@ -105,7 +89,7 @@ function showStatusModal(element) {
     )
 }
 
-function telaCheia() {
+function fullScreenTrigger() {
     elem = document.documentElement
     if (window.innerHeight === screen.height) {
         document.exitFullscreen()
