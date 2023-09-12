@@ -1,4 +1,8 @@
-*.json
+devices.json
+devices_bkp.json
+snapshot.json
+tinytuya.json
+tuya-raw.json
 bin
 include
 lib

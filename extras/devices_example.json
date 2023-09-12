@@ -1,0 +1,35 @@
+[
+    {
+        "name": "Dispositivo 1",
+        "service": "tuya",
+        "group": "Sala de Testes",
+        "id": "dasf3f4fsrgdsg3333",
+        "key": "fsdf42grgerg44gg",
+        "icon": "cz.png",
+        "dps": 1,
+        "ip": "",
+        "version": ""
+    },
+    {
+        "name": "Dispositivo 2",
+        "service": "tuya",
+        "group": "Sala de Testes",
+        "id": "eb75asdasfgsgfgf5a46x",
+        "key": "6adb2gdfhfges6b1a8",
+        "icon": "sp.png",
+        "dps": 1,
+        "ip": "",
+        "version": ""
+    },
+    {
+        "name": "TV",
+        "service": "lgtv",
+        "group": "Quarto",
+        "id": "eb6f92fsdfdsfdsfd20aa5o8tl",
+        "key": "78asdasda036sdfdsfdsf5",
+        "icon": "tv.png",
+        "dps": 1,
+        "ip": "",
+        "version": ""
+    }
+]
